@@ -25,9 +25,16 @@ scrape_configs:
 
     static_configs:
       - targets:
-{% for t in prom_node_targets %}
+{%   for t in prom_node_targets %}
         - {{t.name}}:{{t.port}}
-{% endfor %}
+{%   endfor %}
+{% endif %}
+
+{% if loki_host is defined %}
+  - job_name: 'loki'
+    static_configs:
+      - targets:
+        - loki:3100
 {% endif %}
 
 {% if prom_httpcheck_targets|length > 0 %}
