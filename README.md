@@ -32,6 +32,5 @@ prom_httpcheck_targets:
 
 ```yml
 prom_ec2_monitoring_enable: true
-prom_ec2_monitoring_access_key: AKIAIOSFODNN7EXAMPLE
-prom_ec2_monitoring_secret_access_key: wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
+prom_ec2_monitoring_region: ap-northeast-1
 ```
