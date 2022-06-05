@@ -1,0 +1,43 @@
+---
+- name: Create directories
+  file:
+    state: directory
+    path: "{{ item }}"
+    mode: 0755
+  with_items:
+    - /etc/prometheus
+    - /opt/docker-compose-service/prometheus
+
+- name: Create a prometheus network
+  docker_network:
+    name: prometheus-network
+    ipam_config:
+      - subnet: 192.168.100.0/24
+    driver_options:
+      com.docker.network.bridge.name: prom0
+  notify: Restart prometheus
+
+- name: Put docker-compose.yml
+  template:
+    src: docker-compose.yml.j2
+    dest: /opt/docker-compose-service/prometheus/docker-compose.yml
+  notify: Restart prometheus
+
+- name: Put prometheus.yml
+  template:
+    src: prometheus.yml.j2
+    dest: /etc/prometheus/prometheus.yml
+  notify: Restart prometheus
+
+- name: Put blackbox.yml
+  template:
+    src: blackbox.yml.j2
+    dest: /etc/prometheus/blackbox.yml
+  notify: Restart prometheus
+
+- name: Start prometheus
+  systemd:
+    name: docker-compose-service@prometheus
+    enabled: yes
+    state: started
+    daemon_reload: yes

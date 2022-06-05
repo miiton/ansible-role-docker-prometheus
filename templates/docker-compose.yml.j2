@@ -1,0 +1,57 @@
+version: "3"
+services:
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    volumes:
+      - /etc/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus-data:/prometheus
+    networks:
+      - prometheus-network
+{% if prom_node_targets|length > 0 %}
+    extra_hosts:
+{% for t in prom_node_targets %}
+      - {{ t.name }}:{{ t.ipaddr }}
+{% endfor %}
+{% endif %}
+    logging:
+      options:
+        max-size: "10k"
+        max-file: "5"
+    command: ["--config.file=/etc/prometheus/prometheus.yml", "--storage.tsdb.path=/prometheus/", "--storage.tsdb.retention.time={{ prom_retention_time }}"]
+
+  blackbox:
+    image: prom/blackbox-exporter
+    container_name: blackbox_exporter
+    volumes:
+      - /etc/prometheus/blackbox.yml:/config/blackbox.yml
+    command: ["--config.file=/config/blackbox.yml", "--log.level=debug"]
+    networks:
+      - prometheus-network
+    logging:
+      options:
+        max-size: "10k"
+        max-file: "5"
+
+  cadvisor:
+    image: google/cadvisor:latest
+    container_name: cadvisor
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+      - /dev/disk/:/dev/disk:ro
+    networks:
+      - prometheus-network
+    logging:
+      options:
+        max-size: "10k"
+        max-file: "5"
+
+volumes:
+  prometheus-data:
+
+networks:
+  prometheus-network:
+    external: true

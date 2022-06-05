@@ -1,0 +1,7 @@
+---
+- name: Restart prometheus
+  systemd:
+    name: docker-compose-service@prometheus
+    enabled: yes
+    state: restarted
+    daemon_reload: yes
