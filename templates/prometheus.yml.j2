@@ -90,3 +90,13 @@ scrape_configs:
       - source_labels: [__meta_ec2_tag_Name]
         target_label: instance
 {% endif %}
+
+{% if vault_host != "" %}
+  - job_name: 'vault'
+    metrics_path: "/v1/sys/metrics"
+    params:
+      format: ['prometheus']
+    bearer_token: "{{ lookup('env', 'VAULT_PROM_TOKEN') }}"
+    static_configs:
+    - targets: ['https://{{ vault_host }}']
+{% endif %}

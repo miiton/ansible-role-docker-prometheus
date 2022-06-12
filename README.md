@@ -34,3 +34,11 @@ prom_httpcheck_targets:
 prom_ec2_monitoring_enable: true
 prom_ec2_monitoring_region: ap-northeast-1
 ```
+
+### Environment
+
+```
+AWS_ACCESS_KEY
+AWS_SECRET_ACCESS_KEY
+VAULT_PROM_TOKEN
+```
