@@ -34,7 +34,7 @@ scrape_configs:
   - job_name: 'loki'
     static_configs:
       - targets:
-        - loki:3100
+        - {{ loki_host }}:3100
 {% endif %}
 
 {% if prom_httpcheck_targets|length > 0 %}
