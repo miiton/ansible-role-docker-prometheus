@@ -97,7 +97,6 @@ scrape_configs:
     params:
       format: ['prometheus']
     scheme: https
-    bearer_token: "{{ lookup('env', 'VAULT_PROM_TOKEN') }}"
     static_configs:
     - targets: ['{{ vault_host }}:8200']
 {% endif %}
