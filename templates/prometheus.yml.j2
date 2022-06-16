@@ -1,28 +1,12 @@
-# my global config
 global:
-  scrape_interval:     {{ prom_scrape_interval }}
+  scrape_interval: {{ prom_scrape_interval }}
   evaluation_interval: 60s
-  # scrape_timeout is set to the global default (10s).
-
-  # Attach these labels to any time series or alerts when communicating with
-  # external systems (federation, remote storage, Alertmanager).
   external_labels:
       monitor: '{{ prom_external_label }}'
 
-# Load rules once and periodically evaluate them according to the global 'evaluation_interval'.
-rule_files:
-  # - "first.rules"
-  # - "second.rules"
-
-# A scrape configuration containing exactly one endpoint to scrape:
-# Here it's Prometheus itself.
 scrape_configs:
 {% if prom_node_targets|length > 0 %}
   - job_name: 'node'
-
-    # metrics_path defaults to '/metrics'
-    # scheme defaults to 'http'.
-
     static_configs:
       - targets:
 {%   for t in prom_node_targets %}
@@ -37,7 +21,8 @@ scrape_configs:
         - {{ loki_host }}:3100
 {% endif %}
 
-{% if prom_httpcheck_targets|length > 0 %}
+{% if blackbox_exporter_host != "" %}
+{%   if prom_httpcheck_targets|length > 0 %}
   - job_name: 'httpcheck'
     scrape_interval: 60s
     metrics_path: /probe
@@ -45,21 +30,27 @@ scrape_configs:
       module: [http_2xx]
     static_configs:
       - targets:
-{% for t in prom_httpcheck_targets %}
+{%     for t in prom_httpcheck_targets %}
         - {{ t }}
-{% endfor %}
+{%     endfor %}
     relabel_configs:
       - source_labels: [__address__]
         target_label: __param_target
       - source_labels: [__param_target]
         target_label: instance
       - target_label: __address__
-        replacement: blackbox:9115
+        replacement: {{ blackbox_exporter_host }}
+{%   endif %}
 {% endif %}
 
+{% if prom_cadvisor_targets|length > 0 %}
   - job_name: 'cadvisor'
     static_configs:
-    - targets: ['cadvisor:8080']
+{%   for t in prom_cadvisor_targets %}
+    - targets:
+      -  {{ t }}
+{%   endfor %}
+{% endif %}
 
 {% if prom_ec2_monitoring_enable %}
   - job_name: 'ec2'
