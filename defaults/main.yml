@@ -3,3 +3,4 @@
 # prom_extra_hosts: []
 prom_scrape_interval: 60s
 prom_retention_time: 15d
+prom_samehost: true

@@ -7,7 +7,11 @@ services:
       - /etc/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
       - prometheus-data:/prometheus
     networks:
+{% if prom_samehost == true %}
       - prometheus-network
+{% else %}
+      - default
+{% endif %}
 {% if prom_node_targets|length > 0 %}
     extra_hosts:
 {% for t in prom_node_targets %}
@@ -30,58 +34,11 @@ services:
 {% endif %}
     command: ["--config.file=/etc/prometheus/prometheus.yml", "--storage.tsdb.path=/prometheus/", "--storage.tsdb.retention.time={{ prom_retention_time }}"]
 
-  blackbox:
-    image: prom/blackbox-exporter
-    container_name: blackbox_exporter
-    volumes:
-      - /etc/prometheus/blackbox.yml:/config/blackbox.yml
-    command: ["--config.file=/config/blackbox.yml"]
-    networks:
-      - prometheus-network
-{% if loki_host == "" %}
-    logging:
-      options:
-        max-size: "10k"
-        max-file: "5"
-{% else %}
-    logging:
-      driver: loki
-      options:
-        loki-url: https://{{ loki_host }}/loki/api/v1/push
-        loki-tenant-id: {{ loki_tenant_id }}
-        max-size: "10k"
-        max-file: "5"
-{% endif %}
-
-  cadvisor:
-    image: google/cadvisor:latest
-    container_name: cadvisor
-    volumes:
-      - /:/rootfs:ro
-      - /var/run:/var/run:ro
-      - /sys:/sys:ro
-      - /var/lib/docker/:/var/lib/docker:ro
-      - /dev/disk/:/dev/disk:ro
-    networks:
-      - prometheus-network
-{% if loki_host == "" %}
-    logging:
-      options:
-        max-size: "10k"
-        max-file: "5"
-{% else %}
-    logging:
-      driver: loki
-      options:
-        loki-url: https://{{ loki_host }}/loki/api/v1/push
-        loki-tenant-id: {{ loki_tenant_id }}
-        max-size: "10k"
-        max-file: "5"
-{% endif %}
-
 volumes:
   prometheus-data:
 
+{% if prom_samehost == true %}
 networks:
   prometheus-network:
     external: true
+{% endif %}
