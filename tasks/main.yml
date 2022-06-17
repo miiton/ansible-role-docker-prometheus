@@ -12,7 +12,7 @@
   docker_network:
     name: prometheus-network
     ipam_config:
-      - subnet: {{ prom_network_subnet }}
+      - subnet: "{{ prom_network_subnet }}"
     driver_options:
       com.docker.network.bridge.name: prom0
   when: prom_samehost == true
