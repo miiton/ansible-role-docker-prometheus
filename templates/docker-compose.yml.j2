@@ -1,7 +1,7 @@
 version: "3"
 services:
   prometheus:
-    image: prom/prometheus
+    image: prom/prometheus:{{ prom_version }}
     container_name: prometheus
     volumes:
       - /etc/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
