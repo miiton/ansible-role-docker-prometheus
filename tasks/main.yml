@@ -28,7 +28,7 @@
   template:
     src: prometheus.yml.j2
     dest: /etc/prometheus/prometheus.yml
-  notify: Restart prometheus
+  notify: Reload prometheus
 
 - name: Start prometheus
   systemd:
