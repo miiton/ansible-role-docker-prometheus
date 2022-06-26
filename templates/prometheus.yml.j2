@@ -21,6 +21,14 @@ scrape_configs:
         - {{ loki_host }}:3100
 {% endif %}
 
+{% if switchbot_exporter_host is defined %}
+  - job_name: 'switchbot'
+    metrics_path: "/metrics"
+    static_configs:
+      - targets:
+        - {{ switchbot_exporter_host }}:9130
+{% endif %}
+
 {% if blackbox_exporter_host != "" %}
 {%   if prom_httpcheck_targets|length > 0 %}
   - job_name: 'httpcheck'
