@@ -3,6 +3,7 @@ services:
   prometheus:
     image: prom/prometheus:{{ prom_version }}
     container_name: prometheus
+    restart: unless-stopped
     volumes:
       - /etc/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
       - prometheus-data:/prometheus

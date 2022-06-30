@@ -7,3 +7,4 @@ prom_retention_time: 15d
 prom_samehost: true
 prom_network_subnet: 192.168.100.0/24
 blackbox_exporter_host: blackbox_exporter:9115
+    

@@ -1,3 +1,9 @@
+{% if prom_remote_write is defined %}
+{% filter indent(0) %}
+{{ prom_remote_write }}
+{% endfilter %}
+{% endif %}
+
 global:
   scrape_interval: {{ prom_scrape_interval }}
   evaluation_interval: 60s
@@ -14,22 +20,7 @@ scrape_configs:
 {%   endfor %}
 {% endif %}
 
-{% if loki_host is defined %}
-  - job_name: 'loki'
-    static_configs:
-      - targets:
-        - {{ loki_host }}:3100
-{% endif %}
-
-{% if switchbot_exporter_host is defined %}
-  - job_name: 'switchbot'
-    metrics_path: "/metrics"
-    static_configs:
-      - targets:
-        - {{ switchbot_exporter_host }}:9130
-{% endif %}
-
-{% if blackbox_exporter_host != "" %}
+{% if blackbox_exporter_host is defined %}
 {%   if prom_httpcheck_targets|length > 0 %}
   - job_name: 'httpcheck'
     scrape_interval: 60s
@@ -90,12 +81,8 @@ scrape_configs:
         target_label: instance
 {% endif %}
 
-{% if vault_host != "" %}
-  - job_name: 'vault'
-    metrics_path: "/v1/sys/metrics"
-    params:
-      format: ['prometheus']
-    scheme: https
-    static_configs:
-    - targets: ['{{ vault_host }}:8200']
+{% if prom_additional_target is defined %}
+{% filter indent(2,True) %}
+{{ prom_additional_target }}
+{% endfilter %}
 {% endif %}

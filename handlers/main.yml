@@ -6,7 +6,7 @@
     state: restarted
     daemon_reload: yes
 
-- name: Reaload prometheus
+- name: Reload prometheus
   community.docker.docker_container_exec:
     container: prometheus
     command: killall -HUP prometheus
