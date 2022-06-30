@@ -24,6 +24,15 @@ prom_ec2_monitoring_enable: true
 prom_ec2_monitoring_region: ap-northeast-1
 vault_host: vault.example.com # if need
 blackbox_exporter_host: blackbox_exporter:9115
+prom_remote_write_url: http://mimir.example.com:9009/api/v1/push
+prom_additional_target: |
+  - job_name: 'hoge'
+    metrics_path: "/v1/sys/metrics"
+    params:
+      format: ['prometheus']
+    scheme: https
+    static_configs:
+    - targets: ['{{ vault_host }}:8200']
 ```
 
 ### Environment
